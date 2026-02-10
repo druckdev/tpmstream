@@ -140,12 +140,21 @@ class TPM2B_IV:
     buffer: list[BYTE]
 
 
+class TPMU_NAME_SIZE(UINT16):
+    _valid_values = ValidValues(
+        0,
+        TPM_HANDLE._int_size,
+        *sorted(TPM_ALG_ID._int_size + v for v in set(TPMU_HA._list_size.values())),
+    )
+
+    HANDLE = TPM_HANDLE._int_size
+
+
 @tpm_dataclass
 class TPMU_NAME:
-    # TODO look up in TSS?
     _selected_by = {
-        "digest": 1337,
-        "handle": 1337,
+        "digest": None,
+        "handle": TPMU_NAME_SIZE.HANDLE,
     }
 
     digest: TPMT_HA
@@ -154,8 +163,12 @@ class TPMU_NAME:
 
 @tpm_dataclass
 class TPM2B_NAME:
-    size: UINT16
-    name: list[BYTE]
+    _selectors = {
+        "name": "size",
+    }
+
+    size: TPMU_NAME_SIZE
+    name: TPMU_NAME
 
 
 @tpm_dataclass
