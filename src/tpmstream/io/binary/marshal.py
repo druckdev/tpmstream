@@ -377,10 +377,17 @@ def process_tpm2b(tpm_type, path, size_constraints=None, abort_on_error=True):
         )
         return size_size, tpm_type(**values)
 
+    selector_value = None
+    if buffer_field.name in getattr(tpm_type, "_selectors", {}):
+        # buffer is union and can be further interpreted
+        selector_name = tpm_type._selectors[buffer_field.name]
+        selector_value = values[selector_name]
+
     try:
         buffer_size, buffer_value = yield from process(
             buffer_field.type,
             path / PathNode(buffer_field.name),
+            selector=selector_value,
             size_constraints=size_constraints,
             abort_on_error=abort_on_error,
         )
