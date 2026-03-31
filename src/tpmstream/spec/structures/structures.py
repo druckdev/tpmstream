@@ -19,6 +19,7 @@ from .interface_types import (
     TPMI_SH_AUTH_SESSION,
     TPMI_YES_NO,
 )
+from .key_object_complex import TPM2B_PUBLIC
 
 
 @tpm_dataclass
@@ -140,6 +141,41 @@ class TPM2B_IV:
     buffer: list[BYTE]
 
 
+@tpm_dataclass
+class TPM2B_SHARED_SECRET:
+    size: UINT16
+    buffer: list[BYTE]
+
+
+@tpm_dataclass
+class TPMU_KEM_CIPHERTEXT:
+    # TODO: do something similar as in TPMU_NAME
+    _selected_by = {
+        "ecdh": TPM_ALG.ECC,
+        "mlkem": TPM_ALG.MLKEM,
+    }
+
+    ecdh: list[BYTE]
+    mlkem: list[BYTE]
+
+
+@tpm_dataclass
+class TPM2B_KEM_CIPHERTEXT:
+    # TODO: do something similar as in TPMU_NAME
+    _selectors = {
+        "name": "size",
+    }
+
+    size: UINT16
+    buffer: list[BYTE]
+
+
+@tpm_dataclass
+class TPM2B_VENDOR_PROPERTY:
+    size: UINT16
+    buffer: list[BYTE]
+
+
 class TPMU_NAME_SIZE(UINT16):
     _valid_values = ValidValues(
         0,
@@ -245,6 +281,12 @@ class TPMS_ACT_DATA:
 
 
 @tpm_dataclass
+class TPMS_SPDM_SESSION_INFO:
+    reqKeyName: TPM2B_NAME
+    tpmKeyName: TPM2B_NAME
+
+
+@tpm_dataclass
 class TPML_CC:
     count: UINT32
     commandCodes: list[TPM_CC]
@@ -323,6 +365,24 @@ class TPML_ACT_DATA:
 
 
 @tpm_dataclass
+class TPML_PUB_KEY:
+    count: UINT32
+    pubKeys: list[TPM2B_PUBLIC]
+
+
+@tpm_dataclass
+class TPML_SPDM_SESSION_INFO:
+    count: UINT32
+    pubKeys: list[TPMS_SPDM_SESSION_INFO]
+
+
+@tpm_dataclass
+class TPML_VENDOR_PROPERTY:
+    count: UINT32
+    vendorData: list[TPM2B_VENDOR_PROPERTY]
+
+
+@tpm_dataclass
 class TPMU_CAPABILITIES:
     _selected_by = {
         "algorithms": TPM_CAP.ALGS,
@@ -336,6 +396,9 @@ class TPMU_CAPABILITIES:
         "eccCurves": TPM_CAP.ECC_CURVES,
         "authPolicies": TPM_CAP.AUTH_POLICIES,
         "actData": TPM_CAP.ACT,
+        "pubKeys": TPM_CAP.PUB_KEYS,
+        "spdmSessionInfo": TPM_CAP.SPDM_SESSION_INFO,
+        "vendorProperty": TPM_CAP.VENDOR_PROPERTY,
         "null": TPM_CAP.VENDOR_PROPERTY,
     }
 
@@ -350,6 +413,9 @@ class TPMU_CAPABILITIES:
     eccCurves: TPML_ECC_CURVE
     authPolicies: TPML_TAGGED_POLICY
     actData: TPML_ACT_DATA
+    pubKeys: TPML_PUB_KEY
+    spdmSessionInfo: TPML_SPDM_SESSION_INFO
+    vendorProperty: TPML_VENDOR_PROPERTY
     null: None  # added to satisfy selector completeness
 
 

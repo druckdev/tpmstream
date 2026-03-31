@@ -87,6 +87,7 @@ class TPM_ALG(UINT16):
     CBC = AlgValue(0x0042, AlgType.Symmetric, AlgType.Encryption)
     CFB = AlgValue(0x0043, AlgType.Symmetric, AlgType.Encryption)
     ECB = AlgValue(0x0044, AlgType.Symmetric, AlgType.Encryption)
+    # TODO: MLKEM
 
     @classmethod
     def by_type_at_least(cls, *types) -> list[AlgValue]:
@@ -329,6 +330,8 @@ class TPM_CAP(UINT32):
     ECC_CURVES = 0x00000008
     AUTH_POLICIES = 0x00000009
     ACT = 0x0000000A
+    PUB_KEYS = 0x0000000B
+    SPDM_SESSION_INFO = 0x0000000B
     VENDOR_PROPERTY = 0x00000100
 
 
@@ -382,6 +385,9 @@ class TPM_PT(UINT32):
     NV_BUFFER_MAX = 0x0000012C
     MODES = 0x0000012D
     MAX_CAP_BUFFER = 0x0000012E
+    FIRMWARE_SVN = 0x0000012F
+    FIRMWARE_MAX_SVN = 0x00000130
+    ML_PARAMETER_SETS = 0x00000131
     # gap
     PERMANENT = 0x00000200
     STARTUP_CLEAR = 0x00000201
